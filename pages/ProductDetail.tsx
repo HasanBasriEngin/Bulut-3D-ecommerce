@@ -10,9 +10,9 @@ interface ProductDetailProps {
 }
 
 export const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onAddToCart }) => {
-    const [material, setMaterial] = useState<MaterialType>(product.availableMaterials[0]);
+    const [material, setMaterial] = useState<MaterialType>(product.availableMaterials?.[0] || 'PLA' as MaterialType);
     const [size] = useState<SizeType>(SizeType.MEDIUM); 
-    const [color, setColor] = useState<string>(product.availableColors[0]);
+    const [color, setColor] = useState<string>(product.availableColors?.[0] || '#000000');
     const [price, setPrice] = useState<number>(product.basePrice);
     const [quantity, setQuantity] = useState<number | string>(1);
     
@@ -60,7 +60,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, o
         let modifier = 0;
         // RESIN removed
         if (material === MaterialType.ABS) modifier += 50;
-        setPrice(product.basePrice + modifier);
+        setPrice((product.basePrice  ?? 0)+ modifier);
     }, [material, product.basePrice]);
 
     const handleAddToCart = () => {
@@ -223,7 +223,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, o
                     <div className="flex flex-col">
                         <div className="mb-6">
                             <div className="flex flex-wrap gap-2 mb-2">
-                                {product.categories.map((cat, idx) => (
+                                {product.categories?.map((cat, idx) => (
                                     <span key={idx} className="bg-brand-50 text-brand-600 px-2 py-0.5 rounded text-xs font-semibold uppercase tracking-wider">
                                         {cat}
                                     </span>
@@ -261,7 +261,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, o
                         </div>
 
                         <div className="text-3xl font-bold text-slate-900 mb-8">
-                            ₺{price.toFixed(2)}
+                           ₺{(price ?? 0).toFixed(2)}
                         </div>
 
                         {/* Configuration Form */}
@@ -367,7 +367,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, o
                             >
                                 <span>Sepete Ekle</span>
                                 <span className="bg-white/20 px-2 py-0.5 rounded text-sm font-medium">
-                                    ₺{((typeof quantity === 'number' ? quantity : parseInt(quantity) || 1) * price).toFixed(2)}
+                                    ₺{((typeof quantity === 'number' ? quantity : parseInt(quantity) || 1) * (price ?? 0)).toFixed(2)}
                                 </span>
                             </button>
                         </div>

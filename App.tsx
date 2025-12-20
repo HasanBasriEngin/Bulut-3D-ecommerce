@@ -42,12 +42,24 @@ if (loading) {
     // Veritabanından ürünleri çeken fonksiyon
   useEffect(() => {
         const fetchData = async () => {
-            // 1. Ürünleri Çek
+            // 1. Ürünleri Çek ve Eşle
             const { data: productsData } = await supabase
                 .from('products')
                 .select('*')
                 .order('created_at', { ascending: false });
-            if (productsData) setAllProducts(productsData as Product[]);
+
+            if (productsData) {
+                // Veritabanındaki isimleri React'ın beklediği isimlere çeviriyoruz
+                const mappedProducts = productsData.map(p => ({
+                    ...p,
+                    basePrice: p.basePrice || p.base_price || 0, // 0 TL sorununu çözer
+                    availableMaterials: p.availableMaterials || p.available_materials || [], // Beyaz ekranı çözer
+                    availableColors: p.availableColors || p.available_colors || [],
+                    videoUrl: p.videoUrl || p.video_url || '',
+                    imageUrl: (p.images && p.images.length > 0) ? p.images[0] : (p.image_url || '')
+                }));
+                setAllProducts(mappedProducts as Product[]);
+            }
 
             // 2. Siparişleri Çek
             const { data: ordersData } = await supabase
@@ -56,7 +68,7 @@ if (loading) {
                 .order('created_at', { ascending: false });
             if (ordersData) setMockOrders(ordersData as any);
 
-            // 3. Özel İstekleri (Custom Requests) Çek
+            // 3. Özel İstekleri Çek
             const { data: customData } = await supabase
                 .from('custom_requests')
                 .select('*')
@@ -65,13 +77,13 @@ if (loading) {
             if (customData) {
                 setCustomRequests(customData.map(item => ({
                     id: item.id,
-                    name: item.full_name, // TypeScript hatasını önlemek için 'name' olarak eşliyoruz
+                    name: item.full_name,
                     email: item.email,
                     phone: item.phone,
                     description: item.description,
                     date: new Date(item.created_at).toLocaleDateString('tr-TR'),
                     status: item.status,
-                    material: "Belirtilmedi" // Interface zorunlu kılıyorsa ekliyoruz
+                    material: "Belirtilmedi"
                 })));
 // 4. Müşterileri (Profiles) Veritabanından Çek
             const { data: profilesData } = await supabase
@@ -254,16 +266,19 @@ if (loading) {
         const { data, error } = await supabase
             .from('products')
             .insert([{
-                name: newProd.name,
-                description: newProd.description,
-                base_price: newProd.basePrice, // TypeScript'teki basePrice -> DB'deki base_price
-                image_url: newProd.imageUrl,
-                stock: newProd.stock || 20,
-                categories: newProd.categories,
-                rating: 5.0,
-                review_count: 0,
-                sales: 0,
-                barcode: newProd.barcode || `869${Math.floor(Math.random() * 10000)}`
+              name: newProd.name,
+            description: newProd.description,
+            shortDescription: newProd.shortDescription, // SQL'deki yeni isim
+            basePrice: Number(newProd.basePrice),       // SQL'deki yeni isim
+            costPrice: Number(newProd.costPrice || 0),   // SQL'deki yeni isim
+            stock: Number(newProd.stock || 0),
+            categories: newProd.categories || ['Figür'],
+            images: newProd.images || [],
+            availableMaterials: newProd.availableMaterials || ['PLA'], // SQL'deki yeni isim
+            availableColors: newProd.availableColors || ['#000000'],     // SQL'deki yeni isim
+            videoUrl: newProd.videoUrl || '',           // SQL'deki yeni isim
+            rating: 5,
+            reviewCount: 0                              // SQL'deki yeni isim
             }])
             .select();
 

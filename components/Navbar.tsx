@@ -37,6 +37,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     onCatalogClick,
     onKeychainsClick,
     onSearch
+
 }) => {
     // AuthContext'ten gerekli fonksiyonları çekiyoruz
     const { user, signInWithGoogle, signOut } = useAuth(); 
@@ -69,6 +70,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             searchInputRef.current.focus();
         }
     }, [isSearchOpen]);
+    const handleLogout = async () => {
+    await signOut(); // Supabase'den çıkış yap
+    onHomeClick();   // Kullanıcıyı ana sayfaya yönlendir
+};
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -176,7 +181,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                                             {user.user_metadata?.full_name?.split(' ')[0] || user.email?.split('@')[0]}
                                         </span>
                                     </button>
-                                    <button onClick={signOut} title="Çıkış Yap" className="p-2 text-slate-400 hover:text-red-500">
+                                    <button onClick={handleLogout} title="Çıkış Yap" className="p-2 text-slate-400 hover:text-red-500">
                                         <LogOut size={18} />
                                     </button>
                                 </div>

@@ -128,7 +128,7 @@ export const Catalog: React.FC<CatalogProps> = ({
                                         </div>
                                         
                                         <div className="mt-auto flex items-center justify-between pt-4">
-                                            <span className="text-lg font-bold text-slate-700">{product.basePrice.toFixed(0)} TL</span>
+                                            <span className="text-lg font-bold text-slate-700">{(product.basePrice ?? 0).toFixed(0)} TL</span>
                                             <button className="bg-slate-900 text-white text-xs font-medium px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors">
                                                 İncele
                                             </button>

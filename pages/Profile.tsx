@@ -12,6 +12,13 @@ interface ProfileProps {
     onCancelOrder: (id: string) => void;
     onReturnOrder: (id: string) => void;
 }
+interface SavedCard {
+    id: number;
+    last4: string;
+    holder: string;
+    expiry: string;
+    type: string;
+}
 
 type TabType = 'USER_INFO' | 'ADDRESS' | 'CARDS' | 'NOTIFICATIONS' | 'PASSWORD' | 'ORDERS' | 'OFFERS' | 'COUPONS';
 
@@ -26,11 +33,11 @@ export const Profile: React.FC<ProfileProps> = ({ onGoHome, customRequests, orde
 
     // Mock States for Forms
     const [addressForm, setAddressForm] = useState({
-        title: 'Ev Adresi',
-        city: 'İstanbul',
-        district: 'Kadıköy',
-        address: 'Bağdat Caddesi, No: 123, Daire: 5',
-        phone: '0555 123 45 67'
+        title: '',
+        city: '',
+        district: '',
+        address: '',
+        phone: ''
     });
 
     const [passwordForm, setPasswordForm] = useState({
@@ -45,10 +52,7 @@ export const Profile: React.FC<ProfileProps> = ({ onGoHome, customRequests, orde
         whatsapp: true
     });
 
-    const [savedCards, setSavedCards] = useState([
-        { id: 1, last4: '4242', holder: user?.user_metadata?.full_name || 'Kullanıcı', expiry: '12/25', type: 'Mastercard' },
-        { id: 2, last4: '8899', holder: user?.user_metadata?.full_name || 'Kullanıcı', expiry: '09/26', type: 'Visa' }
-    ]);
+   const [savedCards, setSavedCards] = useState<SavedCard[]>([]);
 
     if (!user) {
         onGoHome();

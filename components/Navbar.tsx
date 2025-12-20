@@ -123,15 +123,30 @@ export const Navbar: React.FC<NavbarProps> = ({
                             </div>
                         </div>
 
-                        {/* Desktop Navigation */}
-                        <div className="hidden lg:flex space-x-6">
-                            <button onClick={onHomeClick} className="text-slate-600 hover:text-brand-600 font-medium transition-colors">Ana Sayfa</button>
-                            <button onClick={onCatalogClick} className="text-slate-600 hover:text-brand-600 font-medium transition-colors">Katalog</button>
-                            <button onClick={onKeychainsClick || onCatalogClick} className="text-slate-600 hover:text-brand-600 font-medium transition-colors">Anahtarlıklar</button>
-                            <button onClick={onOrderTrackingClick} className="text-slate-600 hover:text-brand-600 font-medium transition-colors flex items-center gap-1">
-                                <Truck size={16} /> Sipariş Takibi
-                            </button>
-                        </div>
+                        
+    {/* Navbar.tsx - Masaüstü Menü Kısmı */}
+<div className="hidden lg:flex space-x-6">
+    <button onClick={onHomeClick} className="text-slate-600 hover:text-brand-600 font-medium transition-colors">Ana Sayfa</button>
+    <button onClick={onCatalogClick} className="text-slate-600 hover:text-brand-600 font-medium transition-colors">Katalog</button>
+    <button onClick={onKeychainsClick || onCatalogClick} className="text-slate-600 hover:text-brand-600 font-medium transition-colors">Anahtarlıklar</button>
+    <button onClick={onOrderTrackingClick} className="text-slate-600 hover:text-brand-600 font-medium transition-colors flex items-center gap-1">
+        <Truck size={16} /> Sipariş Takibi
+    </button>
+
+    {/* --- YENİ EKLENEN ADMİN BUTONU --- */}
+    {user?.isAdmin && (
+        <button 
+            onClick={onAdminClick} 
+            className="text-red-600 hover:text-red-700 font-bold flex items-center gap-1 bg-red-50 px-3 py-1 rounded-lg transition-colors border border-red-100"
+        >
+            <LayoutDashboard size={16} /> 
+            Yönetim Paneli
+        </button>
+    )}
+    {/* ---------------------------------- */}
+</div>
+
+                      
 
                         {/* Actions */}
                         <div className="flex items-center space-x-2 sm:space-x-3">

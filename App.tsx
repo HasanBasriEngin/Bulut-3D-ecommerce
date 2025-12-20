@@ -670,6 +670,7 @@ if (loading) {
                         onBack={handleGoHome}
                         onProductSelect={handleProductSelect}
                         onToggleWishlist={toggleWishlist}
+                
                     />
                 )}
                 {currentView === 'CUSTOM_ORDER' && (

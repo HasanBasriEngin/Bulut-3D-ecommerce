@@ -1,11 +1,11 @@
+import { User as SupabaseUser } from '@supabase/supabase-js';
 
-// Domain Models reflecting the Database Structure
+// --- Domain Models reflecting the Database Structure ---
 
 export enum MaterialType {
     PLA = 'PLA',
     PETG = 'PETG',
     ABS = 'ABS',
-    // RESIN removed
     TPU = 'TPU (Esnek)'
 }
 
@@ -29,56 +29,56 @@ export interface Product {
     name: string;
     description: string;
     shortDescription: string;
-    basePrice: number; // Satış Fiyatı
-    costPrice?: number; // Alış/Maliyet Fiyatı (Yeni)
-    categories: string[]; // ÇOKLU KATEGORİ DESTEĞİ
-    imageUrl: string; // Ana Resim (Thumb)
-    images?: string[]; // ÇOKLU RESİM GALERİSİ (Yeni)
-    videoUrl?: string; // YOUTUBE YERİNE DIRECT VIDEO URL
-    tags?: string[]; // FİLTRELEME ETİKETLERİ (Yeni)
+    basePrice: number;
+    costPrice?: number;
+    categories: string[];
+    imageUrl: string;
+    images?: string[];
+    videoUrl?: string;
+    tags?: string[];
     rating: number;
     reviewCount: number;
-    sales?: number; // SATIŞ ADEDİ (Sıralama için)
-    // Added for Admin Panel
+    sales?: number;
     stock?: number;
     barcode?: string; 
-    // In a real DB, variants are joined. Here we allow options to generate variants.
     availableMaterials: MaterialType[];
     availableColors: string[];
     availableSizes: SizeType[];
-    reviews?: Review[]; // Yeni: Ürün yorumları
+    reviews?: Review[];
 }
 
-// Simulating the 'product_variants' table
 export interface VariantConfig {
     material: MaterialType;
     size: SizeType;
     color: string;
-    priceModifier: number; // Added to basePrice
+    priceModifier: number;
     stock: number;
 }
 
 export interface CartItem {
-    cartId: string; // Unique ID for the cart line item (product + variants)
+    cartId: string;
     product: Product;
     selectedVariant: VariantConfig;
     quantity: number;
 }
 
-export interface User {
-    id: string;
-    fullName: string;
-    email: string;
+/**
+ * Supabase Kullanıcısını Genişletiyoruz (isAdmin ekliyoruz)
+ * Bu sayede hem Supabase özelliklerini kullanırız hem de Admin kontrolü yapabiliriz.
+ */
+export interface ExtendedUser extends SupabaseUser {
+    isAdmin?: boolean;
+    // Eğer veritabanında ekstra alanların varsa buraya da ekleyebilirsin:
+    fullName?: string;
     phoneNumber?: string;
     address?: string;
-    joinDate: string;
-    isAdmin?: boolean; // Admin flag
+    joinDate?: string;
 }
 
 export interface Coupon {
     id: string;
     code: string;
-    discountRate: number; // 0.10 for 10%
+    discountRate: number;
     description: string;
     isUsed: boolean;
     minAmount?: number;
@@ -94,7 +94,6 @@ export interface Customer {
     totalSpent: number;
 }
 
-// Yeni: Sipariş içindeki ürün özeti için
 export interface OrderItemSummary {
     productName: string;
     variantInfo: string;
@@ -109,20 +108,18 @@ export interface Order {
     status: 'Hazırlanıyor' | 'Baskı Aşamasında' | 'Kargoya Verildi' | 'Teslim Edildi' | 'İptal Edildi' | 'İade Edildi';
     total: number;
     date: string;
-    items: number; // Item count summary
-    orderItems?: OrderItemSummary[]; // Detaylı ürün listesi
+    items: number;
+    orderItems?: OrderItemSummary[];
     orderNumber: string;
-    customerName: string; // For Admin
-    customerEmail: string; // For Admin
-    customerAddress?: string; // New: Full address snapshot
-    customerPhone?: string; // New
-    // New fields for detailed tracking
+    customerName: string;
+    customerEmail: string;
+    customerAddress?: string;
+    customerPhone?: string;
     paymentMethod?: 'Nakit' | 'EFT/Havale' | 'Kredi Kartı' | 'Shopier';
     shippingCompany?: string;
     trackingNumber?: string;
 }
 
-// Payment Types
 export interface CreditCardForm {
     cardHolder: string;
     cardNumber: string;
@@ -133,14 +130,13 @@ export interface CreditCardForm {
 
 export interface AddressForm {
     fullName: string;
-    email: string; // For guest checkout
+    email: string;
     phone: string;
     city: string;
     district: string;
     fullAddress: string;
 }
 
-// New: Custom Order Request for Admin Panel
 export interface CustomRequest {
     id: string;
     date: string;
@@ -150,8 +146,7 @@ export interface CustomRequest {
     material: string;
     description: string;
     status: 'Yeni' | 'İncelendi' | 'Teklif Verildi';
-    fileUrl?: string; // Müşterinin yüklediği dosya (opsiyonel)
-    // Offer details from Admin
+    fileUrl?: string;
     offerPrice?: number;
     offerNote?: string;
     offerDate?: string;

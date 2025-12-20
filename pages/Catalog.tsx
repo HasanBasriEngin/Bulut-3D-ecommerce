@@ -1,7 +1,6 @@
-
 import React, { useState, useMemo } from 'react';
 import { Product } from '../types';
-import { Heart } from 'lucide-react';
+import { Heart, ArrowLeft } from 'lucide-react'; // ArrowLeft ikonunu ekledik
 
 interface CatalogProps {
     title: string;
@@ -20,7 +19,6 @@ export const Catalog: React.FC<CatalogProps> = ({
     onProductSelect, 
     onToggleWishlist 
 }) => {
-    // Görseldeki kategori listesi
     const categories = [
         "Tümü",
         "Figür & Karakter",
@@ -31,23 +29,30 @@ export const Catalog: React.FC<CatalogProps> = ({
 
     const [selectedCategory, setSelectedCategory] = useState<string>('Tümü');
 
-    // Kategori filtreleme mantığı
     const filteredProducts = useMemo(() => {
         if (selectedCategory === 'Tümü') return products;
 
-        // "Figür & Karakter" için "Figür" veya "Oyuncak" içerenleri döndür
         if (selectedCategory === 'Figür & Karakter') {
             return products.filter(p => p.categories.some(c => c === 'Figür' || c === 'Oyuncak' || c === 'Karakter'));
         }
         
-        // Diğer kategoriler için ismin içinde geçiyor mu kontrol et (Basit eşleştirme)
-        // Örneğin "Dekorasyon" -> categories içinde "Dekorasyon" var mı?
-        const searchKey = selectedCategory.split(' ')[0]; // "Yılbaşı Özel" -> "Yılbaşı"
+        const searchKey = selectedCategory.split(' ')[0];
         return products.filter(p => p.categories.some(c => c.includes(searchKey)));
     }, [products, selectedCategory]);
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in min-h-screen">
+            
+            {/* --- YENİ EKLENEN ANA SAYFAYA DÖN BUTONU --- */}
+            <button 
+                onClick={onBack}
+                className="mb-8 flex items-center gap-2 text-slate-500 hover:text-brand-600 transition-colors font-medium group"
+            >
+                <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+                Ana Sayfaya Dön
+            </button>
+            {/* ------------------------------------------ */}
+
             <div className="flex flex-col md:flex-row gap-8">
                 
                 {/* Sol Sidebar (Kategoriler) */}
@@ -88,13 +93,13 @@ export const Catalog: React.FC<CatalogProps> = ({
                                     onClick={() => onProductSelect(product)}
                                     className="bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group flex flex-col h-full border border-slate-100"
                                 >
+                                    {/* Ürün Görseli ve Badge'ler */}
                                     <div className="relative aspect-square overflow-hidden bg-slate-50">
                                         {product.categories.includes('Yılbaşı') && (
                                              <span className="absolute top-3 left-3 bg-white/90 backdrop-blur text-[10px] font-bold px-2 py-1 rounded text-slate-700 z-10 uppercase tracking-wider">
                                                 Yılbaşı Özel
                                             </span>
                                         )}
-                                        {/* Yeni etiketi (Mock) */}
                                         {product.id === 1 && (
                                              <span className="absolute top-3 left-3 bg-blue-100 text-[10px] font-bold px-2 py-1 rounded text-blue-700 z-10 uppercase tracking-wider">
                                                 YENİ
@@ -115,6 +120,7 @@ export const Catalog: React.FC<CatalogProps> = ({
                                         />
                                     </div>
                                     
+                                    {/* Ürün Bilgileri */}
                                     <div className="p-5 flex flex-col flex-grow">
                                         <div className="mb-2">
                                             <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1">{product.categories[0]}</p>

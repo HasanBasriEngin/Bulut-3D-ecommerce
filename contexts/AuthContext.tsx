@@ -1,12 +1,9 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { User } from '@supabase/supabase-js';
-
+import { ExtendedUser } from '../types'; // types.ts dosyasından yeni yapıyı çekiyoruz
 // User tipini genişleterek isAdmin özelliğini ekliyoruz
-export interface ExtendedUser extends User {
-  isAdmin?: boolean;
-  full_name?: string;
-}
+
 
 interface AuthContextType {
   user: ExtendedUser | null;
@@ -38,21 +35,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  useEffect(() => {
-    // Sayfa yenilendiğinde mevcut oturumu kontrol et
+ // 37. satırdaki boşluğa adminEmail tanımını ekle
+const adminEmail = "info@bulut3dbaski.com"; 
+
+useEffect(() => {
+    // Sayfa ilk açıldığında oturumu kontrol et
     supabase.auth.getSession().then(({ data: { session } }) => {
-      handleUserSession(session?.user ?? null);
-      setLoading(false);
+        if (session?.user) {
+            const fullUser: ExtendedUser = {
+                ...session.user,
+                isAdmin: session.user.email?.toLowerCase() === adminEmail.toLowerCase()
+            };
+            setUser(fullUser);
+        } else {
+            setUser(null);
+        }
+        setLoading(false);
     });
 
-    // Giriş/Çıkış durumlarını dinle
+    // Giriş/Çıkış durumlarını anlık dinle
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      handleUserSession(session?.user ?? null);
-      setLoading(false);
+        if (session?.user) {
+            const fullUser: ExtendedUser = {
+                ...session.user,
+                isAdmin: session.user.email?.toLowerCase() === adminEmail.toLowerCase()
+            };
+            setUser(fullUser);
+        } else {
+            setUser(null);
+        }
+        setLoading(false);
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+}, []);
 
   const signInWithGoogle = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
